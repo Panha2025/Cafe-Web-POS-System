@@ -1,0 +1,17 @@
+Demo menu photography downloaded from Unsplash. Replace with your own product photos through Products. Images are illustrative.
+
+americano.jpg: https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&h=440&q=85
+cappuccino.jpg: https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=500&h=440&q=85
+latte.jpg: https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?auto=format&fit=crop&w=500&h=440&q=85
+mocha.jpg: https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=500&h=440&q=85
+matcha.jpg: https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=500&h=440&q=85
+thai-tea.jpg: https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=500&h=440&q=85
+chocolate.jpg: https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=500&h=440&q=85
+lemon-tea.jpg: https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=500&h=440&q=85
+peach-soda.jpg: https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=500&h=440&q=85
+strawberry-soda.jpg: https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=500&h=440&q=85
+croissant.jpg: https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=500&h=440&q=85
+muffin.jpg: https://images.unsplash.com/photo-1607958996333-41aef7caefaa?auto=format&fit=crop&w=500&h=440&q=85
+cheesecake.jpg: https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=500&h=440&q=85
+chocolate-cake.jpg: https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&h=440&q=85
+cookies.jpg: https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=500&h=440&q=85

@@ -1,0 +1,33 @@
+{
+  "name": "cafe-pos",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "db:local": "node scripts/local-db.js",
+    "db:init": "node scripts/init-db.js",
+    "db:migrate": "node scripts/migrate.js",
+    "pos:keygen": "node scripts/generate-pos-signing-key.js",
+    "dev": "concurrently -k -n api,web \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "build": "npm run build -w frontend",
+    "start": "npm run start -w backend",
+    "test": "node --test tests/api.test.js tests/phase2-crypto.test.js",
+    "test:e2e": "playwright test",
+    "test:build": "node tests/build-smoke.js",
+    "test:pwa": "node tests/pwa-smoke.js",
+    "test:offline": "node tests/offline-outbox-smoke.js",
+    "user:password": "node scripts/change-password.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "concurrently": "^9.2.1",
+    "embedded-postgres": "18.4.0-beta.17",
+    "prettier": "^3.9.6"
+  }
+}

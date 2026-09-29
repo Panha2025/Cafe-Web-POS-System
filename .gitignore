@@ -1,0 +1,11 @@
+node_modules/
+.env
+.npm-cache/
+.local-db*/
+frontend/dist/
+backend/uploads/*
+!backend/uploads/.gitkeep
+playwright-report/
+test-results/
+*.log
+.runtime/

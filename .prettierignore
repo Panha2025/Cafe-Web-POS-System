@@ -1,0 +1,9 @@
+node_modules
+.local-db
+.npm-cache
+.runtime
+frontend/dist
+backend/uploads
+test-results
+playwright-report
+package-lock.json
