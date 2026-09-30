@@ -10,6 +10,7 @@
     "setup": "node scripts/setup.js",
     "db:local": "node scripts/local-db.js",
     "db:init": "node scripts/init-db.js",
+    "db:init:production": "node scripts/init-production-db.js",
     "db:migrate": "node scripts/migrate.js",
     "pos:keygen": "node scripts/generate-pos-signing-key.js",
     "dev": "concurrently -k -n api,web \"npm run dev -w backend\" \"npm run dev -w frontend\"",
@@ -21,6 +22,7 @@
     "test:pwa": "node tests/pwa-smoke.js",
     "test:offline": "node tests/offline-outbox-smoke.js",
     "user:password": "node scripts/change-password.js",
+    "user:create-admin": "node scripts/create-admin.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

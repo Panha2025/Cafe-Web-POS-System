@@ -1,5 +1,6 @@
 import multer from 'multer';
 import sharp from 'sharp';
+import { put } from '@vercel/blob';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
@@ -18,7 +19,7 @@ export const upload = multer({
     );
   },
 });
-// Storage adapter: replace this function with a Cloudinary upload later.
+// Keep local uploads on disk for development and use durable Blob storage on Vercel.
 export async function storeImage(file) {
   if (!file) return undefined;
   let image;
@@ -37,6 +38,21 @@ export async function storeImage(file) {
     );
   }
   const name = `${randomUUID()}.webp`;
+  if (process.env.VERCEL) {
+    if (!process.env.BLOB_READ_WRITE_TOKEN)
+      throw new HttpError(503, 'Image storage is not configured. Contact an administrator.');
+    try {
+      const blob = await put(`product-images/${name}`, image, {
+        access: 'public',
+        addRandomSuffix: false,
+        contentType: 'image/webp',
+        cacheControlMaxAge: 31536000,
+      });
+      return blob.url;
+    } catch {
+      throw new HttpError(503, 'Image storage is temporarily unavailable. Please try again.');
+    }
+  }
   await mkdir(uploadDirectory, { recursive: true });
   await writeFile(`${uploadDirectory}/${name}`, image);
   return `/uploads/${name}`;

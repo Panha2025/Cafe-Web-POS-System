@@ -79,6 +79,44 @@ DATABASE_URL=postgresql://cafepos:YOUR_URL_ENCODED_PASSWORD@127.0.0.1:5432/cafep
 
 Use percent encoding for special characters in URL passwords. Run `npm run db:init`, which executes `database/schema.sql` and `database/seed.sql` against `DATABASE_URL`.
 
+## Deploy the full POS to Vercel
+
+The repository includes a root `vercel.json` for Vercel Services. Import the repository as one **Services** project from the repository root (`./`); do not import only the `frontend` or `backend` service. Vercel routes `/api/*` and `/uploads/*` to Express and the remaining paths to the Vite app, so the browser and API keep the same origin and the existing secure session cookie behavior.
+
+The deployed app requires managed storage; Vercel functions do not provide durable local file storage. From the new Vercel project, create a PostgreSQL database from the Storage/Marketplace section (Neon is one supported Postgres provider) and a **public** Blob store for café/product images. Use the provider's pooled PostgreSQL connection string for `DATABASE_URL`. The Blob integration supplies `BLOB_READ_WRITE_TOKEN` to the project; image uploads stay authenticated by the existing admin routes, are re-encoded as WEBP, and are stored as public images.
+
+Configure these Vercel environment variables for **Production**:
+
+| Variable                          | Value                                                                              |
+| --------------------------------- | ---------------------------------------------------------------------------------- |
+| `DATABASE_URL`                    | Pooled TLS connection string from the managed PostgreSQL provider                  |
+| `JWT_SECRET`                      | A new, random secret of at least 32 characters                                     |
+| `APP_ORIGIN`                      | Exact production origin, for example `https://cafe-pos.example`; no trailing slash |
+| `POS_CATALOG_SIGNING_KEY_ID`      | The key ID generated for this production deployment                                |
+| `POS_CATALOG_SIGNING_PRIVATE_KEY` | Private PEM contents; store only as a Vercel secret, never commit it               |
+| `VITE_POS_CATALOG_PUBLIC_KEYS`    | Matching public-key JSON printed by the key-generation command; this key is public |
+| `POS_CATALOG_LEASE_HOURS`         | `24`                                                                               |
+| `BUSINESS_TIMEZONE`               | `Asia/Phnom_Penh`                                                                  |
+
+Generate a production-only signing key from the project folder with `npm run pos:keygen -- cafe-pos-prod-v1`. The private key is written under ignored `.runtime/`; copy its contents only into the Vercel `POS_CATALOG_SIGNING_PRIVATE_KEY` setting. Put the printed public-key JSON in `VITE_POS_CATALOG_PUBLIC_KEYS`. Do not reuse the local development key.
+
+Apply the schema and migrations to the new managed database before using the app. For a fresh production database, `npm run db:init:production` creates the schema, applies versioned migrations, and seeds the sample catalog without creating demo accounts. Create the first administrator with `npm run user:create-admin -- admin@example.com "Cafe Admin"`; it prompts for a hidden password and refuses to create a bootstrap admin if one already exists. For future schema updates, use the additive migration runner (`npm run db:migrate`) rather than reinitializing a database with live café data. The ordinary local-only `npm run db:init` seeds the documented demo accounts; do not use it for a public production database.
+
+To run either setup command against the Vercel-connected production database, install/log in to the Vercel CLI, link the local project to the new Cafe POS Vercel project, and pull production variables into an ignored local file:
+
+```sh
+npm install -g vercel
+vercel login
+vercel link
+vercel env pull .env.production.local --environment=production
+node --env-file=.env.production.local scripts/init-production-db.js
+node --env-file=.env.production.local scripts/create-admin.js admin@example.com "Cafe Admin"
+```
+
+The `.env.production.local` file is ignored by Git. Do not paste its values into chat or commit it. Use `node --env-file=.env.production.local scripts/migrate.js` for later additive migrations.
+
+The deployed Express app exports the application for Vercel while keeping the existing local `npm run dev` server behavior. Local image uploads still use `backend/uploads/`; Vercel uploads use the connected Blob store. Existing local uploaded image files are not transferred automatically, so upload those again after moving to a new production database.
+
 Alternatively, apply the files manually from the project root:
 
 ```powershell

@@ -58,14 +58,20 @@ export function signatureInput(type, keyId, digest, payloadText) {
 
 async function signingMaterial() {
   const keyId = process.env.POS_CATALOG_SIGNING_KEY_ID || '';
+  const privateKeyText = process.env.POS_CATALOG_SIGNING_PRIVATE_KEY || '';
   const privateKeyPath = process.env.POS_CATALOG_SIGNING_PRIVATE_KEY_PATH || '';
-  if (!keyId || !privateKeyPath)
+  if (!keyId || (!privateKeyText && !privateKeyPath))
     throw new HttpError(503, 'Signed POS catalog service is not configured.');
-  const cacheKey = `${keyId}\n${privateKeyPath}`;
+  const keyFingerprint = privateKeyText
+    ? createHash('sha256').update(privateKeyText).digest('hex')
+    : privateKeyPath;
+  const cacheKey = `${keyId}\n${keyFingerprint}`;
   if (cachedSigningMaterials.has(cacheKey)) return cachedSigningMaterials.get(cacheKey);
   try {
-    const keyPath = resolve(projectRoot, privateKeyPath);
-    const privateKey = createPrivateKey(await readFile(keyPath));
+    const keyMaterial = privateKeyText
+      ? privateKeyText.replace(/\\n/g, '\n')
+      : await readFile(resolve(projectRoot, privateKeyPath));
+    const privateKey = createPrivateKey(keyMaterial);
     if (
       privateKey.asymmetricKeyType !== 'ec' ||
       privateKey.asymmetricKeyDetails?.namedCurve !== 'prime256v1'

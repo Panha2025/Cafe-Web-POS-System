@@ -18,12 +18,19 @@ import devices from './routes/devices.js';
 import pos from './routes/pos.js';
 export const app = express();
 app.disable('x-powered-by');
-if (trustedProxyHops > 0) app.set('trust proxy', trustedProxyHops);
+const proxyHops = process.env.VERCEL ? 1 : trustedProxyHops;
+if (proxyHops > 0) app.set('trust proxy', proxyHops);
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        'img-src': ["'self'", 'data:', 'blob:', 'https://images.unsplash.com'],
+        'img-src': [
+          "'self'",
+          'data:',
+          'blob:',
+          'https://images.unsplash.com',
+          'https://*.public.blob.vercel-storage.com',
+        ],
         'upgrade-insecure-requests': null,
       },
     },
@@ -91,15 +98,19 @@ app.use((error, req, res, next) => {
         : 'Something went wrong while saving or loading data. Please try again.',
   });
 });
-const server = app.listen(Number(process.env.PORT || 4000), process.env.HOST || '127.0.0.1', () =>
-  console.log(
-    `Café POS API running at http://${process.env.HOST || '127.0.0.1'}:${process.env.PORT || 4000}`,
-  ),
-);
-for (const signal of ['SIGINT', 'SIGTERM'])
-  process.on(signal, () =>
-    server.close(async () => {
-      await pool.end();
-      process.exit(0);
-    }),
+export default app;
+
+if (!process.env.VERCEL) {
+  const server = app.listen(Number(process.env.PORT || 4000), process.env.HOST || '127.0.0.1', () =>
+    console.log(
+      `Café POS API running at http://${process.env.HOST || '127.0.0.1'}:${process.env.PORT || 4000}`,
+    ),
   );
+  for (const signal of ['SIGINT', 'SIGTERM'])
+    process.on(signal, () =>
+      server.close(async () => {
+        await pool.end();
+        process.exit(0);
+      }),
+    );
+}
